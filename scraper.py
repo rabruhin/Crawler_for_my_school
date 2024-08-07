@@ -1,5 +1,4 @@
 from selenium import webdriver
-from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -14,7 +13,7 @@ def scrape_data():
     
     # 打印工作目录，检查ChromeDriver路径
     print("Current Working Directory:", os.getcwd())
-    chrome_driver_path = '/opt/chrome/chromedriver'
+    chrome_driver_path = '/opt/render/project/src/chromedriver/chromedriver'
     print("ChromeDriver Path:", chrome_driver_path)
     
     # 配置ChromeDriver
@@ -22,7 +21,7 @@ def scrape_data():
     options.add_argument('--headless')  # 以无头模式运行
     options.add_argument('--no-sandbox')
     options.add_argument('--disable-dev-shm-usage')
-    options.binary_location = '/opt/chrome/google-chrome'
+    options.binary_location = '/opt/render/project/src/chrome/opt/google/chrome/chrome'
 
     # 指定ChromeDriver的路径
     chrome_service = ChromeService(executable_path=chrome_driver_path)
