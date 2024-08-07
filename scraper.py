@@ -1,6 +1,5 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
-from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -15,7 +14,13 @@ def scrape_data():
     # 配置ChromeDriver
     options = webdriver.ChromeOptions()
     options.add_argument('--headless')  # 以无头模式运行
-    driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=options)
+    options.add_argument('--no-sandbox')
+    options.add_argument('--disable-dev-shm-usage')
+
+    # 指定ChromeDriver的路径
+    chrome_service = ChromeService(executable_path='./bin/chromedriver')
+
+    driver = webdriver.Chrome(service=chrome_service, options=options)
     driver.get(url)
 
     try:
@@ -49,7 +54,3 @@ if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
 
-
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port)
