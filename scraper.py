@@ -3,16 +3,14 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from flask import Flask, render_template
+from selenium.webdriver.chrome.service import Service
 import os
 
 app = Flask(__name__)
+service= Service()
 
 def scrape_data():
     url = 'https://www.ntsh.ntpc.edu.tw/'
-    
-    # 设置ChromeDriver路径
-    chrome_driver_path = os.path.join(os.getcwd(), 'bin', 'chromedriver.exe')
-    print("ChromeDriver Path:", chrome_driver_path)
     
     # 配置ChromeDriver
     options = webdriver.ChromeOptions()
@@ -21,7 +19,7 @@ def scrape_data():
     options.add_argument('--disable-dev-shm-usage')
 
     # 初始化ChromeDriver
-    driver = webdriver.Chrome(executable_path=chrome_driver_path, options=options)
+    driver = webdriver.Chrome(service=ChromeService(), options=options)
     driver.set_window_size(1024, 768)
     driver.get(url)
 
