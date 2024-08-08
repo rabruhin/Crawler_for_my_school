@@ -1,5 +1,4 @@
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -23,10 +22,9 @@ def scrape_data():
     options.add_argument('--disable-dev-shm-usage')
     options.binary_location = '/opt/render/project/src/chrome/opt/google/chrome/chrome'
 
-    # 指定ChromeDriver的路径
-    chrome_service = ChromeService(executable_path=chrome_driver_path)
-
-    driver = webdriver.Chrome(service=chrome_service, options=options)
+    # 初始化ChromeDriver
+    driver = webdriver.Chrome(executable_path=chrome_driver_path, options=options)
+    driver.set_window_size(1024, 768)
     driver.get(url)
 
     try:
@@ -60,6 +58,5 @@ if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
 
-    app.run(host='0.0.0.0', port=port)
 
 
