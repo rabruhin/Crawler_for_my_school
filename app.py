@@ -61,7 +61,7 @@ if __name__ == '__main__':
     def run_crawler():
         while True:
             crawl_site()
-            time.sleep(3600)
+            time.sleep(86400)
     
     # 啟動爬蟲和 Flask 伺服器
     threading.Thread(target=run_crawler, daemon=True).start()
