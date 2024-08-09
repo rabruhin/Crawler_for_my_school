@@ -9,6 +9,10 @@ app = Flask(__name__)
 
 def crawl_site():
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
+    options = webdriver.ChromeOptions()
+    options.add_argument("--headless")
+
+driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
     try:
         url = "https://www.ntsh.ntpc.edu.tw/p/403-1000-41-1.php?Lang=zh-tw"
