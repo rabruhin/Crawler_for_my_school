@@ -1,43 +1,48 @@
-import csv
+import time
 from selenium import webdriver
-import json
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
-from flask import Flask, render_template
-import os
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
 
-UserInput = "https://www.ntsh.ntpc.edu.tw/p/403-1000-41-1.php?Lang=zh-tw"
-
-driver = webdriver.Chrome('./chromedriver.exe')
-
-# open the website
-driver.get(UserInput)
-driver.implicitly_wait(25)
-
-
-app = Flask(__name__)
-
-def scrape_ntsh():
-    service = Service(executable_path=driver_path)
-    options = Options()
-    # 如果需要無頭模式（不顯示瀏覽器），可以添加以下選項
-    # options.add_argument('--headless')
-    driver = webdriver.Chrome(service=service, options=options)
+def crawl_site():
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
 
     try:
-        driver.get('https://www.ntsh.ntpc.edu.tw/')
-        elements = driver.find_elements(By.CLASS_NAME, 'row.listBS')
-        content = [element.text for element in elements]
+        url = "https://www.ntsh.ntpc.edu.tw/p/403-1000-41-1.php?Lang=zh-tw"
+        driver.get(url)
+        time.sleep(3)
+        elements = driver.find_elements(By.CSS_SELECTOR, ".row.listBS")
+
+        # 保存爬取的數據到 output.txt
+        with open("output.txt", "w", encoding="utf-8") as file:
+            for element in elements:
+                file.write(element.text + "\n")
+
+        # 將 output.txt 轉換為 HTML 文件
+        convert_txt_to_html("output.txt", "output.html")
+
+    except Exception as e:
+        print(f"Error occurred: {e}")
+
     finally:
         driver.quit()
+
+def convert_txt_to_html(input_file, output_file):
+    with open(input_file, "r", encoding="utf-8") as txt_file:
+        lines = txt_file.readlines()
+
+    html_content = "<html>\n<head>\n<title>Output</title>\n</head>\n<body>\n"
+    html_content += "<h1>爬取的數據</h1>\n<ul>\n"
     
-    return content
+    for line in lines:
+        html_content += f"<li>{line.strip()}</li>\n"
+    
+    html_content += "</ul>\n</body>\n</html>"
 
-@app.route('/')
-def index():
-    content = scrape_ntsh()
-    return render_template('index.html', content=content)
+    with open(output_file, "w", encoding="utf-8") as html_file:
+        html_file.write(html_content)
 
-if __name__ == '__main__':
-    app.run(debug=True)
+# 持續運行爬蟲，每小時運行一次
+while True:
+    crawl_site()
+    time.sleep(3600)  # 每小時運行一次
