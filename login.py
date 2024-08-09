@@ -51,4 +51,4 @@ def main(url):
     login(driver,url)
 
 if __name__ == "__main__":
-    main("https://somelink.com")
+    main("https://www.ntsh.ntpc.edu.tw/p/403-1000-41-1.php?Lang=zh-tw")
