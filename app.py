@@ -1,8 +1,11 @@
+from flask import Flask, send_file
 import time
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
+
+app = Flask(__name__)
 
 def crawl_site():
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
@@ -42,7 +45,13 @@ def convert_txt_to_html(input_file, output_file):
     with open(output_file, "w", encoding="utf-8") as html_file:
         html_file.write(html_content)
 
-# 持續運行爬蟲，每小時運行一次
-while True:
-    crawl_site()
-    time.sleep(3600)  # 每小時運行一次
+# 設置 Flask 路由來返回 HTML 文件
+@app.route('/')
+def serve_html():
+    return send_file('output.html')
+
+# 每小時運行一次爬蟲
+if __name__ == '__main__':
+    while True:
+        crawl_site()
+        time.sleep(3600)
