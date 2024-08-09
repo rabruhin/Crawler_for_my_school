@@ -4,15 +4,15 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.options import Options  # Import Options for ChromeOptions
 
 app = Flask(__name__)
 
 def crawl_site():
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
-    options = webdriver.ChromeOptions()
+    options = Options()
     options.add_argument("--headless")
-
-driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+    
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
     try:
         url = "https://www.ntsh.ntpc.edu.tw/p/403-1000-41-1.php?Lang=zh-tw"
@@ -56,6 +56,14 @@ def serve_html():
 
 # 每小時運行一次爬蟲
 if __name__ == '__main__':
-    while True:
-        crawl_site()
-        time.sleep(3600)
+    import threading
+    
+    def run_crawler():
+        while True:
+            crawl_site()
+            time.sleep(3600)
+    
+    # 啟動爬蟲和 Flask 伺服器
+    threading.Thread(target=run_crawler, daemon=True).start()
+    app.run(host='0.0.0.0', port=5000)
+
