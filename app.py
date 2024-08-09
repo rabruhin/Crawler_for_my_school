@@ -1,6 +1,10 @@
 import csv
 from selenium import webdriver
 import json
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from flask import Flask, render_template
 
 UserInput = "https://www.ntsh.ntpc.edu.tw/p/403-1000-41-1.php?Lang=zh-tw"
 
@@ -10,46 +14,29 @@ driver = webdriver.Chrome('./chromedriver')
 driver.get(UserInput)
 driver.implicitly_wait(25)
 
-cc = 0
-for z in range(100000000):
-    cc = cc + 1
-FinalRes = []
-driver.implicitly_wait(5)
-Result = driver.find_elements_by_class_name(" close-price")
-print(Result[0].text)
 
-for i in range(len(Result)):
-    FinalRes.append(Result[i].text)
+app = Flask(__name__)
 
-for i in range(104):
-    # nextPageButton = driver.find_elements_by_css_selector("#DataTables_Table_0_next")
-    nextPageButton = driver.find_element_by_xpath('//*[@id="DataTables_Table_0_next"]')
-    # print(len(nextPageButton))
-    driver.implicitly_wait(5)
-    nextPageButton.click()
-    newResult = driver.find_elements_by_class_name(" close-price")
-    print(len(newResult))
-    for j in range(len(newResult)):
-        FinalRes.append(newResult[j].text)
-    # Result.extend(newResult)
+def scrape_ntsh():
+    service = Service(executable_path=driver_path)
+    options = Options()
+    # 如果需要無頭模式（不顯示瀏覽器），可以添加以下選項
+    # options.add_argument('--headless')
+    driver = webdriver.Chrome(service=service, options=options)
 
-    # nextPageButton.click()
+    try:
+        driver.get('https://www.ntsh.ntpc.edu.tw/')
+        elements = driver.find_elements(By.CLASS_NAME, 'row.listBS')
+        content = [element.text for element in elements]
+    finally:
+        driver.quit()
+    
+    return content
 
-# print(len(Result))
-print(type(Result))
-with open("file.txt", "w") as f:
-    for s in FinalRes:
-        f.write(s + "\n")
+@app.route('/')
+def index():
+    content = scrape_ntsh()
+    return render_template('index.html', content=content)
 
-# for i in range(len(Result)):
-#     print(Result[i].text)
-# FinalRes.append(Result[i].text)
-# print(len(FinalRes))
-
-print(len(FinalRes))
-
-# driver.close()
-
-# with open("output.csv", "w", newline="") as f:  # open("output.csv","wb") for Python 2
-#     cw = csv.writer(f)
-#     cw.writerows(r + [""] for r in FinalRes)
+if __name__ == '__main__':
+    app.run(debug=True)
