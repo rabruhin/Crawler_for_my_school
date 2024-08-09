@@ -8,7 +8,7 @@ from flask import Flask, render_template
 
 UserInput = "https://www.ntsh.ntpc.edu.tw/p/403-1000-41-1.php?Lang=zh-tw"
 
-driver = webdriver.Chrome('./chromedriver')
+driver = webdriver.Chrome('./chromedriver.exe')
 
 # open the website
 driver.get(UserInput)
