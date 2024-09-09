@@ -7,20 +7,7 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.options import Options
 
-    
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
-    # 剩下的爬蟲代碼保持不變
-
 app = Flask(__name__)
-
-
-def crawl_main_page(url):
-    chrome_options = Options()
-    chrome_options.add_argument("--headless")  # 無頭模式
-    chrome_options.add_argument("--no-sandbox")  # 在無沙盒模式下運行
-    chrome_options.add_argument("--disable-dev-shm-usage")  # 避免共享內存問題
-    chrome_options.binary_location = "/usr/bin/google-chrome"  # 指定 Chrome 的執行檔位置
-
 
 # HTML content template (will be updated dynamically)
 html_content = """
@@ -61,7 +48,13 @@ def scroll_page(driver, scroll_pause_time=2):
         last_height = new_height
 
 def crawl_main_page(url):
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")  # 無頭模式
+    chrome_options.add_argument("--no-sandbox")  # 在無沙盒模式下運行
+    chrome_options.add_argument("--disable-dev-shm-usage")  # 避免共享內存問題
+    chrome_options.binary_location = "/usr/bin/google-chrome"  # 指定 Chrome 的執行檔位置
+
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
     main_page_data = []
     try:
         driver.get(url)
@@ -76,7 +69,13 @@ def crawl_main_page(url):
     return main_page_data
 
 def crawl_detail_pages(main_page_data):
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+    chrome_options.binary_location = "/usr/bin/google-chrome"
+
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
     try:
         global output_data
         output_data = []  # Clear previous data
@@ -95,10 +94,6 @@ def crawl_detail_pages(main_page_data):
             output_data.append("")  # Insert a blank line
     finally:
         driver.quit()
-
-def generate_html():
-    # Output is handled by Flask, so no need to write to output.html
-    pass
 
 def main():
     urls = [
@@ -124,6 +119,7 @@ def run_scraper():
         time.sleep(86400)  # 每天运行一次
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+    threading.Thread(target=run_flask_app).start()  # 啟動 Flask
+    run_scraper()  # 啟動爬蟲
 
 
