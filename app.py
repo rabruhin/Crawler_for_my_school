@@ -129,9 +129,4 @@ if __name__ == "__main__":
     threading.Thread(target=run_flask_app).start()  # 啟動 Flask 應用
     run_scraper()  # 啟動爬蟲
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)), use_reloader=False)
-
-
-
 
