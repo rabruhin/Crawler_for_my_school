@@ -1,7 +1,7 @@
-# 使用 Python 官方映像檔作為基礎
+# 使用 Python 官方基礎映像
 FROM python:3.9-slim
 
-# 安裝必要的工具和 Chrome
+# 安裝必要的依賴和工具，包括 Chrome 和 ChromeDriver
 RUN apt-get update && apt-get install -y \
     wget \
     gnupg \
@@ -45,7 +45,8 @@ COPY . /app
 # 安裝 Python 依賴
 RUN pip install -r requirements.txt
 
-# 啟動 Flask 應用
+# 啟動 Flask 應用，並使用環境變數的 PORT
 CMD ["python", "app.py"]
+
 
 
