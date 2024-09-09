@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: flask-web-scraper
+    env: python
+    buildCommand: ""
+    startCommand: python app.py
+    envVars:
+      - key: RENDER_SERVICE
+        value: chrome
