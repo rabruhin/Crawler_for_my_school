@@ -5,8 +5,18 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.options import Options
 
 app = Flask(__name__)
+
+def crawl_main_page(url):
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")  # 使用無頭模式
+    chrome_options.add_argument("--no-sandbox")  # Render 環境中需要添加此參數
+    chrome_options.add_argument("--disable-dev-shm-usage")  # 避免共享內存問題
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+    # 剩餘代碼保持不變
+
 
 # HTML content template (will be updated dynamically)
 html_content = """
