@@ -7,15 +7,19 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.options import Options
 
+    
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+    # 剩下的爬蟲代碼保持不變
+
 app = Flask(__name__)
+
 
 def crawl_main_page(url):
     chrome_options = Options()
-    chrome_options.add_argument("--headless")  # 使用無頭模式
-    chrome_options.add_argument("--no-sandbox")  # Render 環境中需要添加此參數
+    chrome_options.add_argument("--headless")  # 無頭模式
+    chrome_options.add_argument("--no-sandbox")  # 在無沙盒模式下運行
     chrome_options.add_argument("--disable-dev-shm-usage")  # 避免共享內存問題
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
-    # 剩餘代碼保持不變
+    chrome_options.binary_location = "/usr/bin/google-chrome"  # 指定 Chrome 的執行檔位置
 
 
 # HTML content template (will be updated dynamically)
@@ -120,8 +124,6 @@ def run_scraper():
         time.sleep(86400)  # 每天运行一次
 
 if __name__ == "__main__":
-    # Start Flask server in a separate thread
-    threading.Thread(target=run_flask_app).start()
-    # Start the scraper in the main thread
-    run_scraper()
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+
 
