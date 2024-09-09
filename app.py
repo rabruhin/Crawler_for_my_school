@@ -4,8 +4,9 @@ import time
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
+import os
 
 app = Flask(__name__)
 
@@ -48,12 +49,14 @@ def scroll_page(driver, scroll_pause_time=2):
         last_height = new_height
 
 def crawl_main_page(url):
+    # 設置 Selenium 的 Chrome 參數
     chrome_options = Options()
-    chrome_options.add_argument("--headless")  # 無頭模式
+    chrome_options.add_argument("--headless")  # 使用無頭模式
     chrome_options.add_argument("--no-sandbox")  # 在無沙盒模式下運行
     chrome_options.add_argument("--disable-dev-shm-usage")  # 避免共享內存問題
-    chrome_options.binary_location = "/usr/bin/google-chrome"  # 指定 Chrome 的執行檔位置
+    chrome_options.binary_location = "/usr/bin/google-chrome"  # 指定 Chrome 的二進制文件路徑
 
+    # 啟動 Chrome 瀏覽器
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
     main_page_data = []
     try:
@@ -69,12 +72,14 @@ def crawl_main_page(url):
     return main_page_data
 
 def crawl_detail_pages(main_page_data):
+    # 設置 Selenium 的 Chrome 參數
     chrome_options = Options()
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
     chrome_options.binary_location = "/usr/bin/google-chrome"
 
+    # 啟動 Chrome 瀏覽器
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
     try:
         global output_data
@@ -111,15 +116,18 @@ def main():
     crawl_detail_pages(all_main_page_data)
 
 def run_flask_app():
-    app.run(debug=True, use_reloader=False)
+    # 綁定 Flask 應用到正確的主機和端口
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)), use_reloader=False)
 
 def run_scraper():
     while True:
         main()
-        time.sleep(86400)  # 每天运行一次
+        time.sleep(86400)  # 每天運行一次
 
 if __name__ == "__main__":
-    threading.Thread(target=run_flask_app).start()  # 啟動 Flask
+    # 啟動 Flask 應用和爬蟲
+    threading.Thread(target=run_flask_app).start()  # 啟動 Flask 應用
     run_scraper()  # 啟動爬蟲
+
 
 
